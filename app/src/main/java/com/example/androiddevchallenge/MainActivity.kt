@@ -16,46 +16,34 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val restTime: MutableState<String> = mutableStateOf("--:--")
         setContent {
             MyTheme {
-                MyApp()
+                Text(text = restTime.value)
             }
         }
-    }
-}
 
-// Start building your app here!
-@Composable
-fun MyApp() {
-    Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
-    }
-}
+        object : CountDownTimer(3600 * 1000L, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                restTime.value = (millisUntilFinished / 1000L).run {
+                    "${this / 60}:${this % 60}"
+                }
+            }
 
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun LightPreview() {
-    MyTheme {
-        MyApp()
-    }
-}
-
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
+            override fun onFinish() {
+                restTime.value = "00:00"
+            }
+        }.start()
     }
 }
